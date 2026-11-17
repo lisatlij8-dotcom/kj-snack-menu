@@ -112,7 +112,7 @@ function heroIntro() {
     .from('#hero-burst', { scale: 0, rotation: -120, duration: 1.2 * d, ease: 'back.out(1.4)', transformOrigin: '50% 50%' }, 0.05);
 
   if (burger) {
-    tl.add(burger.intro({ onLand: landed }), 0.2);
+    tl.add(burger.intro({ onLand: landed }).timeScale(2), 0.05);
   } else {
     tl.from('.fallback-burger', { y: -300, duration: 1, ease: 'bounce.out', onComplete: landed }, 0.3);
   }
@@ -140,15 +140,15 @@ async function preload() {
   gsap.set(navLogo, { opacity: 0 });
 
   const logoTl = logoIntro(loaderLogo);
-  if (reduced) logoTl.timeScale(3);
+  logoTl.timeScale(reduced ? 4 : 2.2);
 
   const c = { v: 0 };
   const render = () => { countEl.textContent = Math.round(c.v); barEl.style.transform = `scaleX(${c.v / 100})`; };
-  const minTime = new Promise((r) => gsap.to(c, { v: 86, duration: reduced ? 0.3 : 1.7, ease: 'power2.inOut', onUpdate: render, onComplete: r }));
+  const minTime = new Promise((r) => gsap.to(c, { v: 86, duration: reduced ? 0.2 : 0.6, ease: 'power2.inOut', onUpdate: render, onComplete: r }));
   const fonts = (document.fonts?.ready || Promise.resolve()).catch(() => {});
-  const timeout = new Promise((r) => setTimeout(r, 4000));
+  const timeout = new Promise((r) => setTimeout(r, 1200));
   await Promise.all([minTime, Promise.race([fonts, timeout])]);
-  await new Promise((r) => gsap.to(c, { v: 100, duration: 0.35, ease: 'power2.out', onUpdate: render, onComplete: r }));
+  await new Promise((r) => gsap.to(c, { v: 100, duration: 0.15, ease: 'power2.out', onUpdate: render, onComplete: r }));
 
   // logo flies into the navbar, curtain lifts, hero builds itself
   const exit = gsap.timeline({
@@ -164,17 +164,17 @@ async function preload() {
   });
   const lr = loaderLogo.getBoundingClientRect();
   const nr = navLogo.getBoundingClientRect();
-  exit.to('.preloader__meta, .preloader__bar', { opacity: 0, y: 20, duration: 0.4, ease: 'power2.in' }, 0)
-    .to('#preloader', { clipPath: 'inset(0% 0% 100% 0%)', duration: reduced ? 0.4 : 1.1, ease: 'expo.inOut' }, 0.15)
+  exit.to('.preloader__meta, .preloader__bar', { opacity: 0, y: 20, duration: 0.25, ease: 'power2.in' }, 0)
+    .to('#preloader', { clipPath: 'inset(0% 0% 100% 0%)', duration: reduced ? 0.3 : 0.65, ease: 'expo.inOut' }, 0.05)
     .to(loaderLogo, {
       x: nr.left + nr.width / 2 - (lr.left + lr.width / 2),
       y: nr.top + nr.height / 2 - (lr.top + lr.height / 2),
       scale: nr.width / lr.width,
       rotation: 360,
-      duration: reduced ? 0.4 : 1.2,
+      duration: reduced ? 0.3 : 0.7,
       ease: 'expo.inOut',
-    }, 0.2)
-    .add(heroIntro(), reduced ? 0.3 : 0.55);
+    }, 0.05)
+    .add(heroIntro(), reduced ? 0.15 : 0.2);
 }
 
 // ---------------------------------------------------------------- boot
